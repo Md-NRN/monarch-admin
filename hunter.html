@@ -1,0 +1,504 @@
+<div id="hunter-verification">
+
+  <div class="hunter-box">
+
+    <div class="hunter-title">
+      HUNTER ASSOCIATION
+    </div>
+
+    <div class="hunter-subtitle">
+      VERIFICATION SYSTEM
+    </div>
+
+    <div id="loading">
+      VERIFYING HUNTER LICENSE...
+    </div>
+
+    <div id="result"></div>
+
+  </div>
+
+</div>
+
+
+<style>
+
+#hunter-verification {
+  font-family: Arial, sans-serif;
+  background: #090014;
+  min-height: 500px;
+  padding: 30px 15px;
+  color: white;
+}
+
+.hunter-box {
+  max-width: 650px;
+  margin: auto;
+  padding: 35px;
+  background: #120021;
+  border: 1px solid #9b35ff;
+  border-radius: 18px;
+  box-shadow: 0 0 30px rgba(150,50,255,.25);
+}
+
+.hunter-title {
+  text-align: center;
+  color: #c06cff;
+  font-size: 24px;
+  letter-spacing: 3px;
+}
+
+.hunter-subtitle {
+  text-align: center;
+  color: #888;
+  margin-top: 8px;
+  letter-spacing: 2px;
+}
+
+#loading {
+  text-align: center;
+  margin-top: 50px;
+  color: #c06cff;
+}
+
+.verified {
+  text-align: center;
+}
+
+.verified-icon {
+  font-size: 70px;
+  color: #6cff9c;
+}
+
+.verified-title {
+  font-size: 30px;
+  color: #6cff9c;
+  font-weight: bold;
+}
+
+.hunter-info {
+  margin-top: 30px;
+  text-align: left;
+}
+
+.info-row {
+  padding: 15px 0;
+  border-bottom: 1px solid #39234b;
+}
+
+.info-label {
+  color: #b86cff;
+  font-size: 12px;
+  letter-spacing: 2px;
+}
+
+.info-value {
+  margin-top: 5px;
+  font-size: 17px;
+}
+
+.active {
+  color: #6cff9c;
+  font-weight: bold;
+}
+
+.invalid {
+  text-align: center;
+}
+
+.invalid-icon {
+  font-size: 70px;
+  color: #ff4f6d;
+}
+
+.invalid-title {
+  font-size: 30px;
+  color: #ff4f6d;
+  font-weight: bold;
+}
+
+.revoked {
+  text-align: center;
+}
+
+.revoked-icon {
+  font-size: 70px;
+  color: #ffb347;
+}
+
+.revoked-title {
+  font-size: 30px;
+  color: #ffb347;
+  font-weight: bold;
+}
+
+.suspended {
+  text-align: center;
+}
+
+.suspended-icon {
+  font-size: 70px;
+  color: #ffcc00;
+}
+
+.suspended-title {
+  font-size: 30px;
+  color: #ffcc00;
+  font-weight: bold;
+}
+
+</style>
+
+
+<script>
+
+const params =
+  new URLSearchParams(
+    window.location.search
+  );
+
+
+const hunterId =
+  params.get("id");
+
+const token =
+  params.get("token");
+
+
+const API_URL =
+"https://script.google.com/macros/s/AKfycbxcpJlv-1c92cwoxtXx4-FlEkEyCMin59pTzXTR8mSbcVLRx8rQ2x3HXvCV0l_0tdk-/exec";
+
+
+function callback(data) {
+
+  document.getElementById(
+    "loading"
+  ).style.display = "none";
+
+
+  const result =
+    document.getElementById("result");
+
+
+  /*
+  INVALID
+  */
+
+  if (!data.success) {
+
+    result.innerHTML = `
+
+      <div class="invalid">
+
+        <div class="invalid-icon">
+          ✕
+        </div>
+
+        <div class="invalid-title">
+          INVALID HUNTER LICENSE
+        </div>
+
+        <p>
+          This Hunter License could not be
+          found in the Hunter Association database.
+        </p>
+
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+
+  /*
+  REVOKED
+  */
+
+  if (
+    String(data.status)
+      .trim()
+      .toUpperCase()
+      === "REVOKED"
+  ) {
+
+    result.innerHTML = `
+
+      <div class="revoked">
+
+        <div class="revoked-icon">
+          ⚠
+        </div>
+
+        <div class="revoked-title">
+          LICENSE REVOKED
+        </div>
+
+        <p>
+          This Hunter License has been
+          revoked by the Hunter Association.
+        </p>
+
+        <p>
+          Hunter ID:
+          <strong>${data.hunterId}</strong>
+        </p>
+
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+
+  /*
+  SUSPENDED
+  */
+
+  if (
+    String(data.status)
+      .trim()
+      .toUpperCase()
+      === "SUSPENDED"
+  ) {
+
+    result.innerHTML = `
+
+      <div class="suspended">
+
+        <div class="suspended-icon">
+          ⚠
+        </div>
+
+        <div class="suspended-title">
+          LICENSE SUSPENDED
+        </div>
+
+        <p>
+          This Hunter License is currently suspended.
+        </p>
+
+        <p>
+          Hunter ID:
+          <strong>${data.hunterId}</strong>
+        </p>
+
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+
+  /*
+  ACTIVE
+  */
+
+  if (
+    String(data.status)
+      .trim()
+      .toUpperCase()
+      === "ACTIVE"
+  ) {
+
+    result.innerHTML = `
+
+      <div class="verified">
+
+        <div class="verified-icon">
+          ✓
+        </div>
+
+        <div class="verified-title">
+          VERIFIED HUNTER
+        </div>
+
+      </div>
+
+
+      <div class="hunter-info">
+
+        <div class="info-row">
+
+          <div class="info-label">
+            HUNTER ID
+          </div>
+
+          <div class="info-value">
+            ${data.hunterId}
+          </div>
+
+        </div>
+
+
+        <div class="info-row">
+
+          <div class="info-label">
+            NAME
+          </div>
+
+          <div class="info-value">
+            ${data.name}
+          </div>
+
+        </div>
+
+
+        <div class="info-row">
+
+          <div class="info-label">
+            RANK
+          </div>
+
+          <div class="info-value">
+            ${data.rank}
+          </div>
+
+        </div>
+
+
+        <div class="info-row">
+
+          <div class="info-label">
+            ASSOCIATION BRANCH
+          </div>
+
+          <div class="info-value">
+            ${data.branch}
+          </div>
+
+        </div>
+
+
+        <div class="info-row">
+
+          <div class="info-label">
+            WEAPON / SKILL
+          </div>
+
+          <div class="info-value">
+            ${data.skill}
+          </div>
+
+        </div>
+
+
+        <div class="info-row">
+
+          <div class="info-label">
+            ISSUED
+          </div>
+
+          <div class="info-value">
+            ${data.issueDate}
+          </div>
+
+        </div>
+
+
+        <div class="info-row">
+
+          <div class="info-label">
+            EXPIRES
+          </div>
+
+          <div class="info-value">
+            ${data.expiryDate}
+          </div>
+
+        </div>
+
+
+        <div class="info-row">
+
+          <div class="info-label">
+            STATUS
+          </div>
+
+          <div class="info-value active">
+            ● ACTIVE
+          </div>
+
+        </div>
+
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+
+  /*
+  UNKNOWN STATUS
+  */
+
+  result.innerHTML = `
+
+    <div class="invalid">
+
+      <div class="invalid-icon">
+        ?
+      </div>
+
+      <div class="invalid-title">
+        UNKNOWN LICENSE STATUS
+      </div>
+
+      <p>
+        Please contact Hunter Association.
+      </p>
+
+    </div>
+
+  `;
+
+}
+
+
+/*
+NO ID / TOKEN
+*/
+
+if (!hunterId || !token) {
+
+  document.getElementById(
+    "loading"
+  ).innerHTML =
+    "INVALID VERIFICATION REQUEST";
+
+}
+
+
+/*
+SEND REQUEST
+*/
+
+else {
+
+  const script =
+    document.createElement("script");
+
+
+  script.src =
+    API_URL +
+    "?id=" +
+    encodeURIComponent(hunterId) +
+    "&token=" +
+    encodeURIComponent(token) +
+    "&callback=callback" +
+    "&t=" +
+    Date.now();
+
+
+  document.body.appendChild(script);
+
+}
+
+</script>
