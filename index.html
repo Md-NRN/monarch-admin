@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Monarch System - Admin Control Center</title>
+  <style>
+    #monarch-admin-root{font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;color:#e9edf7;background:#0b0d14;border:1px solid #252a3b;border-radius:18px;overflow:hidden;max-width:1250px;margin:12px auto;min-height:620px}
+    #monarch-admin-root *{box-sizing:border-box}
+    #monarch-admin-root .ma-top{padding:22px 24px;background:linear-gradient(120deg,#151a2a,#10121c);border-bottom:1px solid #252a3b;display:flex;justify-content:space-between;gap:14px;align-items:center;flex-wrap:wrap}
+    #monarch-admin-root .ma-brand{display:flex;gap:12px;align-items:center}
+    #monarch-admin-root .ma-mark{width:44px;height:44px;border-radius:13px;display:grid;place-items:center;background:#242c48;color:#aabaff;font-size:22px;border:1px solid #414e78}
+    #monarch-admin-root h2,#monarch-admin-root h3,#monarch-admin-root p{margin:0}
+    #monarch-admin-root h2{font-size:21px;letter-spacing:.5px}
+    #monarch-admin-root .ma-muted{color:#9ba5bd;font-size:13px;margin-top:5px}
+    #monarch-admin-root button,#monarch-admin-root input,#monarch-admin-root select,#monarch-admin-root textarea{font:inherit}
+    #monarch-admin-root button{cursor:pointer;border:1px solid #303850;background:#1a2031;color:#eaf0ff;padding:10px 13px;border-radius:10px}
+    #monarch-admin-root button:hover{border-color:#8198ff}
+    #monarch-admin-root .ma-primary{background:#536dfe;border-color:#7185ff;color:white;font-weight:700}
+    #monarch-admin-root .ma-danger{background:#351b28;border-color:#633044;color:#ffb7c8}
+    #monarch-admin-root .ma-layout{display:grid;grid-template-columns:220px minmax(0,1fr);min-height:550px}
+    #monarch-admin-root .ma-side{padding:18px 12px;background:#0e111a;border-right:1px solid #252a3b}
+    #monarch-admin-root .ma-nav{display:flex;flex-direction:column;gap:7px}
+    #monarch-admin-root .ma-nav button{text-align:left;background:transparent;border-color:transparent;color:#aab3ca}
+    #monarch-admin-root .ma-nav button.active{background:#1b2340;border-color:#313f70;color:#fff}
+    #monarch-admin-root .ma-content{padding:22px;min-width:0}
+    #monarch-admin-root .ma-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:18px 0}
+    #monarch-admin-root .ma-card{background:#121622;border:1px solid #272e42;border-radius:14px;padding:16px}
+    #monarch-admin-root .ma-card strong{display:block;font-size:25px;margin-top:9px}
+    #monarch-admin-root .ma-card span{font-size:12px;color:#9ba5bd}
+    #monarch-admin-root .ma-toolbar{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin:16px 0}
+    #monarch-admin-root input,#monarch-admin-root select,#monarch-admin-root textarea{width:100%;background:#0d111b;color:#edf1ff;border:1px solid #30384e;border-radius:9px;padding:11px;outline:none}
+    #monarch-admin-root input:focus,#monarch-admin-root select:focus,#monarch-admin-root textarea:focus{border-color:#7185ff}
+    #monarch-admin-root .ma-search{flex:1;min-width:180px}
+    #monarch-admin-root .ma-tablewrap{overflow:auto;border:1px solid #272e42;border-radius:12px}
+    #monarch-admin-root table{width:100%;border-collapse:collapse;min-width:580px}
+    #monarch-admin-root th,#monarch-admin-root td{text-align:left;padding:12px;border-bottom:1px solid #242a3b;font-size:13px;vertical-align:top}
+    #monarch-admin-root th{color:#9ba5bd;background:#121622;font-weight:600}
+    #monarch-admin-root td{overflow-wrap:anywhere}
+    #monarch-admin-root .ma-actions{display:flex;gap:6px;flex-wrap:wrap}
+    #monarch-admin-root .ma-actions button{padding:7px 9px;font-size:12px}
+    #monarch-admin-root .ma-status{padding:10px 12px;border-radius:10px;background:#121622;border:1px solid #2a3145;color:#aeb9d3;font-size:13px;margin:12px 0}
+    #monarch-admin-root .ma-status.error{color:#ffb7c8;border-color:#633044}
+    #monarch-admin-root .ma-status.ok{color:#a9f0cc;border-color:#275b4b}
+    #monarch-admin-root .ma-formgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+    #monarch-admin-root .ma-field{display:flex;flex-direction:column;gap:6px;font-size:12px;color:#aeb9d3}
+    #monarch-admin-root .ma-field.full{grid-column:1/-1}
+    #monarch-admin-root .ma-modal{position:fixed;inset:0;background:#05060bd9;z-index:999999;display:none;align-items:center;justify-content:center;padding:16px}
+    #monarch-admin-root .ma-modal.open{display:flex}
+    #monarch-admin-root .ma-dialog{width:min(760px,100%);max-height:90vh;overflow:auto;background:#111522;border:1px solid #343d57;border-radius:16px;padding:20px}
+    #monarch-admin-root .ma-dialoghead{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px}
+    #monarch-admin-root .ma-dialogfoot{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}
+    #monarch-admin-root .ma-hidden{display:none!important}
+    #monarch-admin-root .ma-login{max-width:480px;margin:60px auto;padding:28px}
+    #monarch-admin-root .ma-login h3{font-size:22px;margin-bottom:8px}
+    #monarch-admin-root .ma-login p{color:#9ba5bd;font-size:14px;line-height:1.6;margin:10px 0 18px}
+    #monarch-admin-root .ma-footnote{color:#8994ad;font-size:12px;line-height:1.6;margin-top:16px}
+  </style>
+</head>
+<body style="background:#05060b; margin:0; padding:20px;">
+  <div id="monarch-admin-root">
+    <div class="ma-top">
+      <div class="ma-brand"><div class="ma-mark">♛</div><div><h2>MONARCH SYSTEM</h2><div class="ma-muted">Admin Control Center · AnimeDex World</div></div></div>
+      <div class="ma-hidden" id="ma-userbar" style="align-items: center; display: flex; flex-wrap: wrap; gap: 10px;"><span class="ma-muted" id="ma-useremail"></span><button id="ma-refresh">↻ Refresh</button><button id="ma-logout">Sign out</button></div>
+    </div>
+
+    <div class="ma-login" id="ma-loginview">
+      <h3>Admin Authentication</h3>
+      <p>Sign in with the authorized Google account to manage Shadow Army soldiers and Dungeon Expeditions.</p>
+      <button class="ma-primary" id="ma-login" style="width: 100%;">Continue with Google</button>
+      <div class="ma-status" id="ma-loginstatus">Firebase setup is required before signing in.</div>
+      <div class="ma-footnote">Access is restricted to the configured administrator. Firestore Security Rules must also enforce admin-only writes.</div>
+    </div>
+
+    <div class="ma-layout ma-hidden" id="ma-appview">
+      <aside class="ma-side"><div class="ma-nav" id="ma-nav">
+        <button class="active" data-section="dashboard">▦ Dashboard</button>
+        <button data-section="shadow_soldiers">👥 Shadow Soldiers</button>
+        <button data-section="dungeon_expeditions">🏰 Dungeon Expeditions</button>
+        <button data-section="quests">⚔ Quests</button>
+        <button data-section="roster_hunters">♙ Hunter Roster</button>
+        <button data-section="achievements_trophies">🏆 Trophies</button>
+      </div></aside>
+      <main class="ma-content">
+        <div class="ma-status" id="ma-status">Connecting to Firebase…</div>
+        <section id="ma-dashboard">
+          <h3>System Overview</h3><p class="ma-muted">Live content totals from Firestore.</p>
+          <div class="ma-cards">
+            <div class="ma-card"><span>SHADOW SOLDIERS</span><strong id="ma-count-shadow_soldiers">—</strong></div>
+            <div class="ma-card"><span>DUNGEON EXPEDITIONS</span><strong id="ma-count-dungeon_expeditions">—</strong></div>
+            <div class="ma-card"><span>QUESTS</span><strong id="ma-count-quests">—</strong></div>
+            <div class="ma-card"><span>HUNTERS</span><strong id="ma-count-roster_hunters">—</strong></div>
+            <div class="ma-card"><span>TROPHIES</span><strong id="ma-count-achievements_trophies">—</strong></div>
+          </div>
+          <div class="ma-card"><strong style="font-size: 16px; margin: 0px 0px 8px;">Shadow Army Publishing Workflow</strong><span>Create or update Shadow Soldiers or Dungeon Expeditions here. The Monarch System mobile app will instantly fetch and sync these changes from Firestore.</span></div>
+        </section>
+        <section class="ma-hidden" id="ma-manager">
+          <h3 id="ma-sectiontitle">Content Manager</h3><p class="ma-muted" id="ma-sectiondesc">Create, search, edit and delete remote content.</p>
+          <div class="ma-toolbar"><input class="ma-search" id="ma-search" placeholder="Search by title or name…" /><button class="ma-primary" id="ma-add">＋ Add new</button></div>
+          <div class="ma-tablewrap"><table><thead><tr><th>Title / Name</th><th>Type / Category</th><th>Details</th><th>Actions</th></tr></thead><tbody id="ma-tbody"><tr><td colspan="4">Loading…</td></tr></tbody></table></div>
+        </section>
+      </main>
+    </div>
+    <div class="ma-modal" id="ma-modal"><div class="ma-dialog"><div class="ma-dialoghead"><h3 id="ma-formtitle">Add content</h3><button id="ma-close">✕</button></div><form id="ma-form"><div class="ma-formgrid" id="ma-formfields"></div><div class="ma-dialogfoot"><button id="ma-cancel" type="button">Cancel</button><button class="ma-primary" id="ma-save" type="submit">Save to Firestore</button></div></form></div></div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script>
+  (function(){
+    "use strict";
+    const FIREBASE_CONFIG = {
+      apiKey: "AIzaSyA9KvyAZBkLztpZj7J4PJiccnMklvcMEzU",
+      authDomain: "shadow-calendar-dfc08.firebaseapp.com",
+      projectId: "shadow-calendar-dfc08",
+      storageBucket: "shadow-calendar-dfc08.firebasestorage.app",
+      messagingSenderId: "715122707485",
+      appId: "1:715122707485:web:25e8f83c8a1d89361b0af4",
+      measurementId: "G-ZKW5WR5GZB"
+    };
+    const ADMIN_EMAIL = "mdnishatrahmannijhum534@gmail.com".toLowerCase().trim();
+
+    const root = document.getElementById("monarch-admin-root");
+    const $ = id => root.querySelector("#"+id);
+    const collections = {
+      shadow_soldiers: {title:"Shadow Soldiers",desc:"Manage Shadow Army units (Igris, Beru, Tank, etc.)",fields:[
+        ["name","Shadow Name","text",true],
+        ["rank","Shadow Rank (e.g. Commander, Marshal)","text",true],
+        ["element","Element / Type","text",true],
+        ["baseBuffPercentage","Base Buff Percentage (e.g. 15)","number",true],
+        ["unlockLevelRequired","Unlock Level Required","number",true],
+        ["totalPower","Total Power Score","number",true],
+        ["iconicQuote","Iconic Quote","textarea",false],
+        ["avatarUrl","Avatar Image URL","url",false],
+        ["isExtracted","Is Extracted By Default","select",true,["false","true"]]
+      ]},
+      dungeon_expeditions: {title:"Dungeon Expeditions",desc:"Manage Dungeon Gates for Offline Farming",fields:[
+        ["dungeonName","Dungeon Name","text",true],
+        ["rankCategory","Gate Rank Category","select",true,["E-Rank","D-Rank","C-Rank","B-Rank","A-Rank","S-Rank","Red Gate","Dungeon Break"]],
+        ["durationHours","Duration (Hours)","number",true],
+        ["recommendedPower","Recommended Power","number",true],
+        ["rewardsXp","Reward XP","number",true],
+        ["rewardsGold","Reward Gold","number",true],
+        ["description","Description / Lore","textarea",false]
+      ]},
+      quests: {title:"Quests",desc:"Daily, Endless and Special Quests",fields:[
+        ["title","Title","text",true],["description","Description","textarea",true],["category","Category","select",true,["daily","endless","special"]],["difficulty","Difficulty","select",true,["easy","normal","hard","expert","legendary"]],["base_xp","Base XP","number",true],["attributes","Attributes (comma-separated)","text",false],["active","Published / Active","select",true,["true","false"]]
+      ]},
+      roster_hunters: {title:"Hunter Roster",desc:"Hunter profiles, ranks, classes and unlock rules",fields:[
+        ["name","Hunter Name","text",true],["title","Title / Epithet","text",true],["description","Description / Lore","textarea",false],["rank","Hunter Rank","select",true,["E-Rank","D-Rank","C-Rank","B-Rank","A-Rank","S-Rank","National Level","Monarch"]],["vessel_class","Vessel Class / Role","text",true],["unlock_level","Unlock Level","number",true],["active","Published / Active","select",true,["true","false"]]
+      ]},
+      achievements_trophies: {title:"Trophies",desc:"Achievement requirements and rewards",fields:[
+        ["title","Trophy Name","text",true],["description","Description / Objective","textarea",true],["progress_target","Progress Target","number",true],["reward_xp","Reward XP","number",true],["active","Published / Active","select",true,["true","false"]]
+      ]}
+    };
+    let db=null, auth=null, currentSection="dashboard", editingId=null, cached={};
+
+    function status(message, kind){const el=$("ma-status");el.textContent=message;el.className="ma-status"+(kind?" "+kind:"");}
+    function loginStatus(message, kind){const el=$("ma-loginstatus");el.textContent=message;el.className="ma-status"+(kind?" "+kind:"");}
+    function isConfigured(){return FIREBASE_CONFIG.apiKey && !FIREBASE_CONFIG.apiKey.startsWith("PASTE_") && FIREBASE_CONFIG.projectId && !FIREBASE_CONFIG.projectId.startsWith("PASTE_") && ADMIN_EMAIL && !ADMIN_EMAIL.startsWith("YOUR_");}
+    function friendlyError(e){
+      const code=e&&e.code||"";
+      if(code.includes("permission-denied"))return "Permission denied. Check Firestore Security Rules and authorized admin email.";
+      if(code.includes("unauthorized-domain"))return "This domain is not authorized in Firebase Authentication settings.";
+      return (e&&e.message)||"An unexpected error occurred.";
+    }
+    function safe(v){return String(v==null?"":v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+    function showApp(user){
+      $("ma-loginview").classList.add("ma-hidden");$("ma-appview").classList.remove("ma-hidden");$("ma-userbar").classList.remove("ma-hidden");
+      $("ma-useremail").textContent=user.email||"Signed in";loadDashboard();
+    }
+    function showLogin(){ $("ma-loginview").classList.remove("ma-hidden");$("ma-appview").classList.add("ma-hidden");$("ma-userbar").classList.add("ma-hidden"); }
+    async function requireAdmin(user){
+      if(!user||!user.email||user.email.toLowerCase()!==ADMIN_EMAIL){
+        await auth.signOut();
+        showLogin();
+        loginStatus("Access denied: this Google account is not the configured administrator.","error");
+        return false;
+      }
+      return true;
+    }
+    async function signIn(){
+      if(!isConfigured()){loginStatus("Setup needed: Firebase config missing.","error");return;}
+      try{const provider=new firebase.auth.GoogleAuthProvider();provider.setCustomParameters({prompt:"select_account"});await auth.signInWithPopup(provider);}
+      catch(e){loginStatus(friendlyError(e),"error");}
+    }
+    async function loadCollection(name){
+      const snap=await db.collection(name).get();
+      cached[name]=snap.docs.map(doc=>Object.assign({id:doc.id},doc.data()));
+      if($("ma-count-"+name))$("ma-count-"+name).textContent=cached[name].length;
+      return cached[name];
+    }
+    async function loadDashboard(){
+      try{status("Loading Firestore content…");await Promise.all(Object.keys(collections).map(loadCollection));status("Connected · Firestore content loaded.","ok");if(currentSection!=="dashboard")renderManager();}
+      catch(e){status(friendlyError(e),"error");}
+    }
+    function switchSection(name){
+      currentSection=name;
+      root.querySelectorAll("#ma-nav button").forEach(b=>b.classList.toggle("active",b.dataset.section===name));
+      $("ma-dashboard").classList.toggle("ma-hidden",name!=="dashboard");
+      $("ma-manager").classList.toggle("ma-hidden",name==="dashboard");
+      if(name!=="dashboard"){ $("ma-sectiontitle").textContent=collections[name].title;$("ma-sectiondesc").textContent=collections[name].desc;$("ma-search").value="";renderManager(); }
+    }
+    function primaryLabel(item){return item.title||item.name||item.dungeonName||item.id;}
+    function renderManager(){
+      const list=cached[currentSection]||[], q=$("ma-search").value.toLowerCase().trim();
+      const filtered=list.filter(x=>JSON.stringify(x).toLowerCase().includes(q));
+      $("ma-tbody").innerHTML=filtered.length?filtered.map(item=>{
+        const detail=item.description||item.iconicQuote||item.requirement||item.vessel_class||item.difficulty||"—";
+        const type=item.rank||item.rankCategory||item.category||item.trophy_type||"—";
+        return `<tr><td><strong>${safe(primaryLabel(item))}</strong><div class="ma-muted">ID: ${safe(item.id)}</div></td><td>${safe(type)}</td><td>${safe(detail).slice(0,170)}</td><td><div class="ma-actions"><button data-edit="${safe(item.id)}">Edit</button><button class="ma-danger" data-delete="${safe(item.id)}">Delete</button></div></td></tr>`;
+      }).join(""):'<tr><td colspan="4">No matching items found. Click “Add new” to create one.</td></tr>';
+      $("ma-tbody").querySelectorAll("[data-edit]").forEach(b=>b.addEventListener("click",()=>openForm(b.dataset.edit)));
+      $("ma-tbody").querySelectorAll("[data-delete]").forEach(b=>b.addEventListener("click",()=>deleteItem(b.dataset.delete)));
+    }
+    function inputFor(field,value){
+      const [key,label,type,required,options]=field;let el;
+      if(type==="textarea"){el=document.createElement("textarea");el.rows=3;el.value=value||"";}
+      else if(type==="select"){
+        el=document.createElement("select");
+        (options||[]).forEach(opt=>{const o=document.createElement("option");o.value=opt;o.textContent=opt==="true"?"Yes / Active":opt==="false"?"No / Draft":opt;o.selected=String(value==1||value==='true'||value===opt)===opt;el.appendChild(o);});
+      } else {el=document.createElement("input");el.type=type==="number"?"number":type==="url"?"url":"text";el.value=value==null?"":value;if(type==="number")el.step="any";}
+      el.name=key;if(required)el.required=true;
+      const wrap=document.createElement("label");wrap.className="ma-field"+(type==="textarea"?" full":"");wrap.textContent=label;wrap.appendChild(el);return wrap;
+    }
+    function openForm(id){
+      editingId=id||null;const schema=collections[currentSection],item=id?(cached[currentSection]||[]).find(x=>x.id===id)||{}:{};
+      $("ma-formtitle").textContent=(id?"Edit ":"Add ")+schema.title.replace(/s$/,"");
+      const fields=$("ma-formfields");fields.innerHTML="";
+      schema.fields.forEach(f=>fields.appendChild(inputFor(f,item[f[0]],f)));
+      $("ma-modal").classList.add("open");
+    }
+    function closeForm(){$("ma-modal").classList.remove("open");editingId=null;}
+    async function saveItem(ev){
+      ev.preventDefault();const user=auth.currentUser;if(!user||user.email.toLowerCase()!==ADMIN_EMAIL){status("Admin session required.","error");return;}
+      const form=new FormData($("ma-form")),data={};
+      collections[currentSection].fields.forEach(f=>{
+        const key=f[0],raw=form.get(key);
+        if(key==="active"||key==="isExtracted")data[key]=raw==="true";
+        else if(f[2]==="number")data[key]=raw===""?0:Number(raw);
+        else data[key]=String(raw||"").trim();
+      });
+      data.updated_at=firebase.firestore.FieldValue.serverTimestamp();
+      if(!editingId)data.created_at=firebase.firestore.FieldValue.serverTimestamp();
+      $("ma-save").disabled=true;$("ma-save").textContent="Saving…";
+      try{
+        if(editingId)await db.collection(currentSection).doc(editingId).set(data,{merge:true});
+        else await db.collection(currentSection).add(data);
+        closeForm();await loadCollection(currentSection);status("Saved successfully to Firestore.","ok");renderManager();
+      }catch(e){status(friendlyError(e),"error");}
+      finally{$("ma-save").disabled=false;$("ma-save").textContent="Save to Firestore";}
+    }
+    async function deleteItem(id){
+      const item=(cached[currentSection]||[]).find(x=>x.id===id);
+      if(!confirm("Permanently delete “"+primaryLabel(item||{id})+"”? This cannot be undone."))return;
+      try{await db.collection(currentSection).doc(id).delete();await loadCollection(currentSection);status("Item deleted.","ok");renderManager();}
+      catch(e){status(friendlyError(e),"error");}
+    }
+    $("ma-login").addEventListener("click",signIn);
+    $("ma-logout").addEventListener("click",()=>auth.signOut());
+    $("ma-refresh").addEventListener("click",loadDashboard);
+    $("ma-nav").addEventListener("click",e=>{const b=e.target.closest("button[data-section]");if(b)switchSection(b.dataset.section);});
+    $("ma-search").addEventListener("input",renderManager);
+    $("ma-add").addEventListener("click",()=>openForm(null));
+    $("ma-form").addEventListener("submit",saveItem);
+    $("ma-close").addEventListener("click",closeForm);$("ma-cancel").addEventListener("click",closeForm);
+    $("ma-modal").addEventListener("click",e=>{if(e.target===$("ma-modal"))closeForm();});
+
+    if(!isConfigured()){loginStatus("Setup needed: Firebase config missing.","error");return;}
+    try{
+      if(!firebase.apps.length)firebase.initializeApp(FIREBASE_CONFIG);
+      auth=firebase.auth();db=firebase.firestore();
+      auth.onAuthStateChanged(async user=>{
+        if(!user){showLogin();return;}
+        if(await requireAdmin(user))showApp(user);
+      });
+    }catch(e){loginStatus(friendlyError(e),"error");}
+  })();
+  </script>
+</body>
+</html>
